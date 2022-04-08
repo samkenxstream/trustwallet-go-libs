@@ -14,7 +14,9 @@ type SyncProducer struct {
 func InitSyncProducer(config *sarama.Config, brokers []string) (*SyncProducer, error) {
 	sarama.Logger = logrus.New()
 
-	config.Producer.Return.Successes = true // it's required to use sync producer
+	// Sarama requires to set this flag `true` to use sync producer.
+	// Producers have 2 channels: successes and errors, if we turn off this flag in config - it will be locked.
+	config.Producer.Return.Successes = true
 
 	syncProducer, err := sarama.NewSyncProducer(brokers, config)
 	if err != nil {
